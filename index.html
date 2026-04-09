@@ -1,0 +1,2395 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Censorliste Matematik</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .search-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #f0f2f5;
+            padding: 1rem 0;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: white;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none;
+        }
+
+        .search-bar input:focus {
+            border-color: #0f3460;
+            box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.1);
+        }
+
+        .search-bar input::placeholder {
+            color: #999;
+        }
+
+        .letter-group {
+            margin-bottom: 2rem;
+        }
+
+        .letter-heading {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f3460;
+            padding: 0.5rem 0;
+            border-bottom: 3px solid #0f3460;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .card-left {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .card-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .card-stilling {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.15rem;
+        }
+
+        .card-email {
+            flex-shrink: 0;
+        }
+
+        .card-email a {
+            color: #0f3460;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.4rem 1rem;
+            border-radius: 8px;
+            background: #eef2f7;
+            transition: background 0.2s, color 0.2s;
+            display: inline-block;
+        }
+
+        .card-email a:hover {
+            background: #0f3460;
+            color: white;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+            font-size: 1.1rem;
+            display: none;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+            font-size: 0.85rem;
+            border-top: 1px solid #e0e0e0;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .stats {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Censorliste Matematik</h1>
+        <p>Beskikkede censorer i matematik</p>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">226</div>
+                <div class="stat-label">Censorer</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">2026&ndash;2030</div>
+                <div class="stat-label">Beskikkelsesperiode</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="S&oslash;g efter navn, stilling eller e-mail..." oninput="filterCards()">
+        </div>
+
+        <div id="cardContainer">
+            <div class="letter-group" data-letter="A">
+                <div class="letter-heading">A</div>
+                <div class="card" data-search="andreas osted andersen junior quant. developer andreas_osted@live.dk">
+                    <div class="card-left">
+                        <div class="card-name">Andreas Osted Andersen</div>
+                        <div class="card-stilling">Junior Quant. Developer</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:andreas_osted@live.dk">andreas_osted@live.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="kasper k.s. andersen lektor kasper.andersen@math.lth.se">
+                    <div class="card-left">
+                        <div class="card-name">Kasper K.S. Andersen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:kasper.andersen@math.lth.se">kasper.andersen@math.lth.se</a>
+                    </div>
+                </div>
+                <div class="card" data-search="kim emil andersen statistiker kiean@vestas.com">
+                    <div class="card-left">
+                        <div class="card-name">Kim Emil Andersen</div>
+                        <div class="card-stilling">Statistiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:kiean@vestas.com">kiean@vestas.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="lars nørvang andersen lektor larsa@math.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Lars Nørvang Andersen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:larsa@math.au.dk">larsa@math.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="line edslev andersen lektor line.edslev.andersen@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Line Edslev Andersen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:line.edslev.andersen@gmail.com">line.edslev.andersen@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="mikkel meyer andersen lektor mikl@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Mikkel Meyer Andersen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mikl@math.aau.dk">mikl@math.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="niels byrial andersen analytiker byrial69@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Niels Byrial Andersen</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:byrial69@gmail.com">byrial69@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="søren asmussen professor asmus@math.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Søren Asmussen</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:asmus@math.au.dk">asmus@math.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jeanette marie axelsen lektor ja@msg-gym.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jeanette Marie Axelsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:ja@msg-gym.dk">ja@msg-gym.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="rasmus axelsen lektor raax@zbc.dk">
+                    <div class="card-left">
+                        <div class="card-name">Rasmus Axelsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:raax@zbc.dk">raax@zbc.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="B">
+                <div class="letter-heading">B</div>
+                <div class="card" data-search="frederik juul bang-jensen softwareudvikler frederik_bang-jensen@hotmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Frederik Juul Bang-Jensen</div>
+                        <div class="card-stilling">Softwareudvikler</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:Frederik_bang-jensen@hotmail.com">Frederik_bang-jensen@hotmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jesper bang-jensen lektor jb@sctknud-gym.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jesper Bang-Jensen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:JB@sctknud-gym.dk">JB@sctknud-gym.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jørgen bang-jensen professor jbj@imada.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jørgen Bang-Jensen</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:jbj@imada.sdu.dk">jbj@imada.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jacob juhl bangsgaard aktuar, ekstern lektor jjs@akademikerpension.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jacob Juhl Bangsgaard</div>
+                        <div class="card-stilling">Aktuar, ekstern lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:jjs@akademikerpension.dk">jjs@akademikerpension.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="andrea barletta lead quant. risk analyst andr.barletta@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Andrea Barletta</div>
+                        <div class="card-stilling">Lead Quant. Risk Analyst</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:andr.barletta@gmail.com">andr.barletta@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="peter beelen lektor pabe@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Peter Beelen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:pabe@dtu.dk">pabe@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jesper bengtson lektor jebe@itu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jesper Bengtson</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:jebe@itu.dk">jebe@itu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="magnus berg møhring adjunkt magnusbergped@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Magnus Berg Møhring</div>
+                        <div class="card-stilling">Adjunkt</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:magnusbergped@gmail.com">magnusbergped@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="johanna kathatrina bertl data scientist johannabertl@fastmail.fm">
+                    <div class="card-left">
+                        <div class="card-name">Johanna Kathatrina Bertl</div>
+                        <div class="card-stilling">Data scientist</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:johannabertl@fastmail.fm">johannabertl@fastmail.fm</a>
+                    </div>
+                </div>
+                <div class="card" data-search="bo martin bibby lektor bibby@ph.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Bo Martin Bibby</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:bibby@ph.au.dk">bibby@ph.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="isabella munk billing aktuar isa_munk@hotmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Isabella Munk Billing</div>
+                        <div class="card-stilling">Aktuar</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:ISA_MUNK@hotmail.com">ISA_MUNK@hotmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="christophe biscio lektor christophe@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Christophe Biscio</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:christophe@math.aau.dk">christophe@math.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="mogens bladt professor bladt@math.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Mogens Bladt</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:bladt@math.ku.dk">bladt@math.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="preben blæsild lektor emeritus p.blaesild@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Preben Blæsild</div>
+                        <div class="card-stilling">Lektor emeritus</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:p.blaesild@gmail.com">p.blaesild@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="matteo bonini lektor mabo@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Matteo Bonini</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mabo@math.aau.dk">mabo@math.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="trine krogh boomsma lektor trine@math.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Trine Krogh Boomsma</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:trine@math.ku.dk">trine@math.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="lasse diness borup analytiker ldb@energinet.dk">
+                    <div class="card-left">
+                        <div class="card-name">Lasse Diness Borup</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:ldb@energinet.dk">ldb@energinet.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="david brander lektor dbra@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">David Brander</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:dbra@dtu.dk">dbra@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="lars frederik brandt henriksen aktuar lars.brandt.henriksen@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Lars Frederik Brandt Henriksen</div>
+                        <div class="card-stilling">Aktuar</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:lars.brandt.henriksen@gmail.com">lars.brandt.henriksen@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="kevin aguyar brix lektor kabrix@imada.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Kevin Aguyar Brix</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:kabrix@imada.sdu.dk">kabrix@imada.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="gerth stølting brodal professor gerth@cs.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Gerth Stølting Brodal</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:gerth@cs.au.dk">gerth@cs.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="kenneth bruhn aktuar kenneth.bruhn.kristiansen@hotmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Kenneth Bruhn</div>
+                        <div class="card-stilling">Aktuar</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:kenneth.bruhn.kristiansen@hotmail.com">kenneth.bruhn.kristiansen@hotmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="morten brøns professor mobr@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Morten Brøns</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mobr@dtu.dk">mobr@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="alice buccioli senior manager alice.buccioli@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Alice Buccioli</div>
+                        <div class="card-stilling">Senior Manager</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:alice.buccioli@gmail.com">alice.buccioli@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="henrik carøe bylling senior data scientist hcbylling@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Henrik Carøe Bylling</div>
+                        <div class="card-stilling">Senior data scientist</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:hcbylling@gmail.com">hcbylling@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="martin bøgsted professor martin.boegsted@rn.dk">
+                    <div class="card-left">
+                        <div class="card-name">Martin Bøgsted</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:martin.boegsted@rn.dk">martin.boegsted@rn.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="C">
+                <div class="letter-heading">C</div>
+                <div class="card" data-search="toke meier carlsen professor toke.carlsen@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Toke Meier Carlsen</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:toke.carlsen@gmail.com">toke.carlsen@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jessica carter lektor jessica@css.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jessica Carter</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:jessica@css.au.dk">jessica@css.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="vaidotas characiejus lektor characiejus@imada.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Vaidotas Characiejus</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:characiejus@imada.sdu.dk">characiejus@imada.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="ann-eva christensen statistiker anneva.christensen@rn.dk">
+                    <div class="card-left">
+                        <div class="card-name">Ann-Eva Christensen</div>
+                        <div class="card-stilling">Statistiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:anneva.christensen@rn.dk">anneva.christensen@rn.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="heidi søgaard christensen lektor hschr@dcm.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Heidi Søgaard Christensen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:hschr@dcm.aau.dk">hschr@dcm.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="johannes christensen lektor johannes@math.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Johannes Christensen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:johannes@math.au.dk">johannes@math.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="kim christensen professor kim@econ.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Kim Christensen</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:kim@econ.au.dk">kim@econ.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="rene bødker christensen lektor rene@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Rene Bødker Christensen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:rene@math.aau.dk">rene@math.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="alexander mangulad christgau analytiker alex58733@live.dk">
+                    <div class="card-left">
+                        <div class="card-name">Alexander Mangulad Christgau</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:alex58733@live.dk">alex58733@live.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jacob stordal christiansen lektor stordaljc@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Jacob Stordal Christiansen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:stordaljc@gmail.com">stordaljc@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="klaus rune christiansen senior data scientist krunechristiansen@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Klaus Rune Christiansen</div>
+                        <div class="card-stilling">Senior data scientist</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:krunechristiansen@gmail.com">krunechristiansen@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="lasse engbo christiansen lektor lec@almail.dk">
+                    <div class="card-left">
+                        <div class="card-name">Lasse Engbo Christiansen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:lec@almail.dk">lec@almail.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="horia cornean professor cornean@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Horia Cornean</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:cornean@math.aau.dk">cornean@math.aau.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="D">
+                <div class="letter-heading">D</div>
+                <div class="card" data-search="bettina dahl søndergaard lektor bdahls@plan.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Bettina Dahl Søndergaard</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:bdahls@plan.aau.dk">bdahls@plan.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="søren dahlgaard chefanalytiker soeren.dahlgaard@live.com">
+                    <div class="card-left">
+                        <div class="card-name">Søren Dahlgaard</div>
+                        <div class="card-stilling">Chefanalytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:soeren.dahlgaard@live.com">soeren.dahlgaard@live.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="ivan bjerre damgård professor ivan@cs.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Ivan Bjerre Damgård</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:ivan@cs.au.dk">ivan@cs.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="kristian danielsen lektor kda@rysensteen.dk">
+                    <div class="card-left">
+                        <div class="card-name">Kristian Danielsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:kda@rysensteen.dk">kda@rysensteen.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="birgit debrabant lektor bdebrabant@imada.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Birgit Debrabant</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:bdebrabant@imada.sdu.dk">bdebrabant@imada.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="dieter degrijse konsulent dieterdegrijse@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Dieter Degrijse</div>
+                        <div class="card-stilling">Konsulent</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:dieterdegrijse@gmail.com">dieterdegrijse@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="claus dethlefsen statistiker cdn@novonordisk.com">
+                    <div class="card-left">
+                        <div class="card-name">Claus Dethlefsen</div>
+                        <div class="card-stilling">Statistiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:cdn@novonordisk.com">cdn@novonordisk.com</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="E">
+                <div class="letter-heading">E</div>
+                <div class="card" data-search="søren eilers professor eilers@math.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Søren Eilers</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:eilers@math.ku.dk">eilers@math.ku.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="F">
+                <div class="letter-heading">F</div>
+                <div class="card" data-search="lisbeth fajstrup lektor fajstrup@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Lisbeth Fajstrup</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:fajstrup@math.aau.dk">fajstrup@math.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="christian riis flor professor crf@sam.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Christian Riis Flor</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:crf@sam.sdu.dk">crf@sam.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="søren fournais professor fournais@math.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Søren Fournais</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:fournais@math.ku.dk">fournais@math.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jes frellsen lektor jefr@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jes Frellsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:jefr@dtu.dk">jefr@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="steen friis møller ekstern lektor sfmoller@math.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Steen Friis Møller</div>
+                        <div class="card-stilling">Ekstern lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:sfmoller@math.au.dk">sfmoller@math.au.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="G">
+                <div class="letter-heading">G</div>
+                <div class="card" data-search="james gabe lektor gabe@imada.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">James Gabe</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:gabe@imada.sdu.dk">gabe@imada.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="sune lauth gadegaard lektor sgadegaard@econ.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Sune Lauth Gadegaard</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:sgadegaard@econ.au.dk">sgadegaard@econ.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="mette gamst analytiker mettegamst.dk@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Mette Gamst</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mettegamst.dk@gmail.com">mettegamst.dk@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="henrik garde lektor garde@math.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Henrik Garde</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:garde@math.au.dk">garde@math.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="emilie gertz postdoc eg@ind.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Emilie Gertz</div>
+                        <div class="card-stilling">Postdoc</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:eg@ind.ku.dk">eg@ind.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="yuri goegebeur lektor yuri.goegebeur@imada.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Yuri Goegebeur</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:yuri.goegebeur@imada.sdu.dk">yuri.goegebeur@imada.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="thomas gotfredsen adjunkt tgot@math.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Thomas Gotfredsen</div>
+                        <div class="card-stilling">Adjunkt</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:tgot@math.au.dk">tgot@math.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="therese graversen lektor theresegraversen@outlook.com">
+                    <div class="card-left">
+                        <div class="card-name">Therese Graversen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:theresegraversen@outlook.com">theresegraversen@outlook.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="dorthe grinderslev chefkonsulent dorte.grinderslev@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Dorthe Grinderslev</div>
+                        <div class="card-stilling">Chefkonsulent</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:Dorte.Grinderslev@gmail.com">Dorte.Grinderslev@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="mads gydesen chefanalytiker mads@gydesen.biz">
+                    <div class="card-left">
+                        <div class="card-name">Mads Gydesen</div>
+                        <div class="card-stilling">Chefanalytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mads@gydesen.biz">mads@gydesen.biz</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="H">
+                <div class="letter-heading">H</div>
+                <div class="card" data-search="niels haldrup professor nhaldrup@econ.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Niels Haldrup</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:nhaldrup@econ.au.dk">nhaldrup@econ.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="ulrich halekoh lektor uhalekoh@health.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Ulrich Halekoh</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:uhalekoh@health.sdu.dk">uhalekoh@health.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="andreas hallbäck analytiker superand007@hotmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Andreas Hallbäck</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:superand007@hotmail.com">superand007@hotmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="ernst hansen lektor erhansen@math.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Ernst Hansen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:erhansen@math.ku.dk">erhansen@math.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="niels væver hartvig portfolio manager, niels@vaever.dk">
+                    <div class="card-left">
+                        <div class="card-name">Niels Væver Hartvig</div>
+                        <div class="card-stilling">Portfolio Manager,</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:niels@vaever.dk">niels@vaever.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="thilde marie haspang chief business analyst tmhaspang@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Thilde Marie Haspang</div>
+                        <div class="card-stilling">Chief Business Analyst</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:tmhaspang@gmail.com">tmhaspang@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="mette magdalene havning aktuar mette@havning.dk">
+                    <div class="card-left">
+                        <div class="card-name">Mette Magdalene Havning</div>
+                        <div class="card-stilling">Aktuar</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mette@havning.dk">mette@havning.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="ninna reitzel heegaard aktuar ninnareitzel@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Ninna Reitzel Heegaard</div>
+                        <div class="card-stilling">Aktuar</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:ninnareitzel@gmail.com">ninnareitzel@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="christian henriksen lektor chrh@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Christian Henriksen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:chrh@dtu.dk">chrh@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="kristian bjørn hessellund statistiker qkah@novonordisk.com">
+                    <div class="card-left">
+                        <div class="card-name">Kristian Bjørn Hessellund</div>
+                        <div class="card-stilling">Statistiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:qkah@novonordisk.com">qkah@novonordisk.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="magnus tor ry hessler aktuar magnus.hessler@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Magnus Tor Ry Hessler</div>
+                        <div class="card-stilling">Aktuar</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:magnus.hessler@gmail.com">magnus.hessler@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="munir eberhard hiabu lektor mh@math.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Munir Eberhard Hiabu</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mh@math.ku.dk">mh@math.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jacob v.b. hjelmborg lektor jhjelmborg@health.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jacob v.B. Hjelmborg</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:jhjelmborg@health.sdu.dk">jhjelmborg@health.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="mette dreier hjelmborg lektor medh@ucl.dk">
+                    <div class="card-left">
+                        <div class="card-name">Mette Dreier Hjelmborg</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:medh@ucl.dk">medh@ucl.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="poul g. hjorth lektor pghj@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Poul G. Hjorth</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:pghj@dtu.dk">pghj@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="asger hobolth lektor asger@math.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Asger Hobolth</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:asger@math.au.dk">asger@math.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="klaus kähler holst principal scientist klaus@holst.it">
+                    <div class="card-left">
+                        <div class="card-name">Klaus Kähler Holst</div>
+                        <div class="card-stilling">Principal scientist</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:klaus@holst.it">klaus@holst.it</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jens leth hougaard professor jlh@ifro.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jens Leth Hougaard</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:jlh@ifro.ku.dk">jlh@ifro.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="nicholas gauguin houghton-larsen konsulent nicholas.gauguin@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Nicholas Gauguin Houghton-Larsen</div>
+                        <div class="card-stilling">Konsulent</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:nicholas.gauguin@gmail.com">nicholas.gauguin@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="bo hove rektor bh@thisted-gymnasium.dk">
+                    <div class="card-left">
+                        <div class="card-name">Bo Hove</div>
+                        <div class="card-stilling">Rektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:bh@thisted-gymnasium.dk">bh@thisted-gymnasium.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="chen huang lektor chen.huang@econ.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Chen Huang</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:chen.huang@econ.au.dk">chen.huang@econ.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="esben høg lektor esben@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Esben Høg</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:esben@math.aau.dk">esben@math.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="tom høholdt docent tomh@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Tom Høholdt</div>
+                        <div class="card-stilling">Docent</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:tomh@dtu.dk">tomh@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="bjarne højgaard chefanalytiker bhoej@hotmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Bjarne Højgaard</div>
+                        <div class="card-stilling">Chefanalytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:bhoej@hotmail.com">bhoej@hotmail.com</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="J">
+                <div class="letter-heading">J</div>
+                <div class="card" data-search="cathrine jacobsen analytiker cathchat77@hotmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Cathrine Jacobsen</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:cathchat77@hotmail.com">cathchat77@hotmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="chr. vinther jacobsen analytiker cvjacobsen@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Chr. Vinther Jacobsen</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:cvjacobsen@gmail.com">cvjacobsen@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="anders nedergaard jensen lektor jensen@imf.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Anders Nedergaard Jensen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:jensen@imf.au.dk">jensen@imf.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="arne jensen professor matarne@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Arne Jensen</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:matarne@math.aau.dk">matarne@math.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="bjarne astrup jensen professor ba.fi@cbs.dk">
+                    <div class="card-left">
+                        <div class="card-name">Bjarne Astrup Jensen</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:ba.fi@cbs.dk">ba.fi@cbs.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="ida græsted jensen analytiker ida@energymodellinglab.com">
+                    <div class="card-left">
+                        <div class="card-name">Ida Græsted Jensen</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:ida@energymodellinglab.com">ida@energymodellinglab.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="kasper bjering søby jensen lektor kasper@bjering.dk">
+                    <div class="card-left">
+                        <div class="card-name">Kasper Bjering Søby Jensen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:kasper@bjering.dk">kasper@bjering.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="morten berg jensen lektor mbj@econ.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Morten Berg Jensen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mbj@econ.au.dk">mbj@econ.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="peter jensen professor pje@econ.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Peter Jensen</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:pje@econ.au.dk">pje@econ.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="anders jessen aktuar anders.h.jessen@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Anders Jessen</div>
+                        <div class="card-stilling">Aktuar</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:anders.h.jessen@gmail.com">anders.h.jessen@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="benjamin randeris johannesen statistiker benjamin@clin.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Benjamin Randeris Johannesen</div>
+                        <div class="card-stilling">Statistiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:benjamin@clin.au.dk">benjamin@clin.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="mikkel willum johansen lektor mwj@ind.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Mikkel Willum Johansen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mwj@ind.ku.dk">mwj@ind.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jon erik johnsen censorformand jjohnsen@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jon Erik Johnsen</div>
+                        <div class="card-stilling">Censorformand</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:jjohnsen@math.aau.dk">jjohnsen@math.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="christian damsgaard jørgensen studieadjunkt cdjo@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Christian Damsgaard Jørgensen</div>
+                        <div class="card-stilling">Studieadjunkt</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:cdjo@math.aau.dk">cdjo@math.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jan guldager jørgensen prodekan jgj@sam.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jan Guldager Jørgensen</div>
+                        <div class="card-stilling">Prodekan</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:jgj@sam.sdu.dk">jgj@sam.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="leif kjær jørgensen lektor emeritus leif.kj@stofanet.dk">
+                    <div class="card-left">
+                        <div class="card-name">Leif Kjær Jørgensen</div>
+                        <div class="card-stilling">Lektor emeritus</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:leif.kj@stofanet.dk">leif.kj@stofanet.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="K">
+                <div class="letter-heading">K</div>
+                <div class="card" data-search="jens kaad lektor kaad@imada.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jens Kaad</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:kaad@imada.sdu.dk">kaad@imada.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="christoffer kanstrup afdelingsdirektør christoffer.kanstrup@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Christoffer Kanstrup</div>
+                        <div class="card-stilling">Afdelingsdirektør</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:Christoffer.Kanstrup@gmail.com">Christoffer.Kanstrup@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="henrik karstoft docent hka@eng.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Henrik Karstoft</div>
+                        <div class="card-stilling">Docent</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:hka@eng.au.dk">hka@eng.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="markus kiderlen lektor kiderlen@math.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Markus Kiderlen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:kiderlen@math.au.dk">kiderlen@math.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="ian kiming professor kiming@math.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Ian Kiming</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:kiming@math.ku.dk">kiming@math.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="kim knudsen lektor kiknu@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Kim Knudsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:kiknu@dtu.dk">kiknu@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="nicole kofoed gymnasielærer nicoledk@hotmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Nicole Kofoed</div>
+                        <div class="card-stilling">Gymnasielærer</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:Nicoledk@hotmail.com">Nicoledk@hotmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="niklas kohl lektor niklaskohl@yahoo.dk">
+                    <div class="card-left">
+                        <div class="card-name">Niklas Kohl</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:niklaskohl@yahoo.dk">niklaskohl@yahoo.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="thomas kokholm lektor thko@econ.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Thomas Kokholm</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:thko@econ.au.dk">thko@econ.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="anne-marie kristensen lektor annemarie.kristensen@get2net.dk">
+                    <div class="card-left">
+                        <div class="card-name">Anne-Marie Kristensen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:annemarie.kristensen@get2net.dk">annemarie.kristensen@get2net.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="johannes tang kristensen analytiker johs@tangkristensen.dk">
+                    <div class="card-left">
+                        <div class="card-name">Johannes Tang Kristensen</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:johs@tangkristensen.dk">johs@tangkristensen.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="simon kristensen lektor sik@math.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Simon Kristensen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:sik@math.au.dk">sik@math.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="kristian uldall kristiansen lektor krkri@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Kristian Uldall Kristiansen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:krkri@dtu.dk">krkri@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="dorte kronborg lektor kronborg@cbs.dk">
+                    <div class="card-left">
+                        <div class="card-name">Dorte Kronborg</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:kronborg@cbs.dk">kronborg@cbs.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="david kyed lektor dkyed@imada.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">David Kyed</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:dkyed@imada.sdu.dk">dkyed@imada.sdu.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="L">
+                <div class="letter-heading">L</div>
+                <div class="card" data-search="nina lange lektor ntl@math.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Nina Lange</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:ntl@math.ku.dk">ntl@math.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="dorthe moeskjær larsen lektor dmla@imada.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Dorthe Moeskjær Larsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:dmla@imada.sdu.dk">dmla@imada.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jesper larsen lektor jesla@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jesper Larsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:jesla@dtu.dk">jesla@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="nicolai siim larsen adjunkt nisi@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Nicolai Siim Larsen</div>
+                        <div class="card-stilling">Adjunkt</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:nisi@dtu.dk">nisi@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="peter larsen adm. direktør mail@larsen-peter.dk">
+                    <div class="card-left">
+                        <div class="card-name">Peter Larsen</div>
+                        <div class="card-stilling">Adm. direktør</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mail@larsen-peter.dk">mail@larsen-peter.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jørgen trankjær lauridsen professor jtl@sam.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jørgen Trankjær Lauridsen</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:jtl@sam.sdu.dk">jtl@sam.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="niels lauritzen lektor niels@math.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Niels Lauritzen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:niels@math.au.dk">niels@math.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jakob lemvig lektor jakle@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jakob Lemvig</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:jakle@dtu.dk">jakle@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="nutan limaye lektor nuli@itu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Nutan Limaye</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:nuli@itu.dk">nuli@itu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jonas lindstrøm jensen analytiker mail@jonaslindstrom.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jonas Lindstrøm Jensen</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mail@jonaslindstrom.dk">mail@jonaslindstrom.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="esben wendt lorenzen lektor ewlorenzen@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Esben Wendt Lorenzen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:ewlorenzen@gmail.com">ewlorenzen@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="richard martin lusby lektor rmlu@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Richard Martin Lusby</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:rmlu@dtu.dk">rmlu@dtu.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="M">
+                <div class="letter-heading">M</div>
+                <div class="card" data-search="søren peder madsen lektor sma@mpe.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Søren Peder Madsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:sma@mpe.au.dk">sma@mpe.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="thomas bruun madsen lektor thomas.madsen@uwl.ac.uk">
+                    <div class="card-left">
+                        <div class="card-name">Thomas Bruun Madsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:Thomas.Madsen@uwl.ac.uk">Thomas.Madsen@uwl.ac.uk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="christian majenz lektor chmaj@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Christian Majenz</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:chmaj@dtu.dk">chmaj@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="steen markvorsen professor stema@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Steen Markvorsen</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:stema@dtu.dk">stema@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="erik andreas martens lektor erik.martens@math.lth.se">
+                    <div class="card-left">
+                        <div class="card-name">Erik Andreas Martens</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:erik.martens@math.lth.se">erik.martens@math.lth.se</a>
+                    </div>
+                </div>
+                <div class="card" data-search="oliver matte lektor oliver@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Oliver Matte</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:oliver@math.aau.dk">oliver@math.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="nicky cordua mattson analytiker nickymattsson@icloud.com">
+                    <div class="card-left">
+                        <div class="card-name">Nicky Cordua Mattson</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:nickymattsson@icloud.com">nickymattsson@icloud.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="claus michelsen lektor claus.mich@icloud.com">
+                    <div class="card-left">
+                        <div class="card-name">Claus Michelsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:claus.mich@icloud.com">claus.mich@icloud.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="andreas midjord analytiker midjord.andreas@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Andreas Midjord</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:midjord.andreas@gmail.com">midjord.andreas@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="anna marie mikkelsen ydelseschef amkm@aarhus.dk">
+                    <div class="card-left">
+                        <div class="card-name">Anna Marie Mikkelsen</div>
+                        <div class="card-stilling">Ydelseschef</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:amkm@aarhus.dk">amkm@aarhus.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="søren wengel mogensen lektor soerenwengel@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Søren Wengel Mogensen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:soerenwengel@gmail.com">soerenwengel@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="maria montanucci lektor marimo@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Maria Montanucci</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:marimo@dtu.dk">marimo@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="sabrina munch hansen analytiker sabrina_privat@hotmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Sabrina Munch Hansen</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:sabrina_privat@hotmail.com">sabrina_privat@hotmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="claus munk professor cm.fi@cbs.dk">
+                    <div class="card-left">
+                        <div class="card-name">Claus Munk</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:cm.fi@cbs.dk">cm.fi@cbs.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="sören möller professor moeller@health.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Sören Möller</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:moeller@health.sdu.dk">moeller@health.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="rasmus ejlers møgelberg lektor mogel@itu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Rasmus Ejlers Møgelberg</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mogel@itu.dk">mogel@itu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="martin møller svensson aktuar mms2x92@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Martin Møller Svensson</div>
+                        <div class="card-stilling">Aktuar</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mms2x92@gmail.com">mms2x92@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="julie bjørner müller-søe senior snf researcher juliebjorner.muller-soe@unil.ch">
+                    <div class="card-left">
+                        <div class="card-name">Julie Bjørner Müller-Søe</div>
+                        <div class="card-stilling">Senior SNF Researcher</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:juliebjorner.muller-soe@unil.ch">juliebjorner.muller-soe@unil.ch</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="N">
+                <div class="letter-heading">N</div>
+                <div class="card" data-search="elisa nicolato lektor eln@econ.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Elisa Nicolato</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:eln@econ.au.dk">eln@econ.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="bo friis nielsen lektor bfn@imm.dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Bo Friis Nielsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:bfn@imm.dtu.dk">bfn@imm.dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="heino bohn nielsen lektor heino.bohn.nielsen@econ.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Heino Bohn Nielsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:heino.bohn.nielsen@econ.ku.dk">heino.bohn.nielsen@econ.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="lars relund nielsen lektor larsrn@econ.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Lars Relund Nielsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:larsrn@econ.au.dk">larsrn@econ.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="mads stenbo nielsen lektor msn.fi@cbs.dk">
+                    <div class="card-left">
+                        <div class="card-name">Mads Stenbo Nielsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:msn.fi@cbs.dk">msn.fi@cbs.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="andreas nordland senior data scientist andreasnordland@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Andreas Nordland</div>
+                        <div class="card-stilling">Senior data scientist</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:andreasnordland@gmail.com">andreasnordland@gmail.com</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="O">
+                <div class="letter-heading">O</div>
+                <div class="card" data-search="john olsen analytiker johno2211@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">John Olsen</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:johno2211@gmail.com">johno2211@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="niels aske lundtorp olsen data scientist nielslundtorp@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Niels Aske Lundtorp Olsen</div>
+                        <div class="card-stilling">Data scientist</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:nielslundtorp@gmail.com">nielslundtorp@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="iver mølgaard ottosen lektor ivot@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Iver Mølgaard Ottosen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:ivot@dtu.dk">ivot@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="pernille jul overby head of capital modelling pernille@juloverby.dk">
+                    <div class="card-left">
+                        <div class="card-name">Pernille Jul Overby</div>
+                        <div class="card-stilling">Head of Capital Modelling</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:pernille@juloverby.dk">pernille@juloverby.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="christian overgaard lund direktør clund@axiomatic.dk">
+                    <div class="card-left">
+                        <div class="card-name">Christian Overgaard Lund</div>
+                        <div class="card-stilling">Direktør</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:clund@axiomatic.dk">clund@axiomatic.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="P">
+                <div class="letter-heading">P</div>
+                <div class="card" data-search="dario pacino lektor darpa@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Dario Pacino</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:darpa@dtu.dk">darpa@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="konstantin pavlikov lektor kop@sam.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Konstantin Pavlikov</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:kop@sam.sdu.dk">kop@sam.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="fabien pazuki professor fpazuki@math.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Fabien Pazuki</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:fpazuki@math.ku.dk">fpazuki@math.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="michael pedersen professor micp@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Michael Pedersen</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:micp@dtu.dk">micp@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="michael berliner pedersen analytiker berlinnov@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Michael Berliner Pedersen</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:berlinnov@gmail.com">berlinnov@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="rasmus søndergaard pedersen lektor rsp@econ.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Rasmus Søndergaard Pedersen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:rsp@econ.ku.dk">rsp@econ.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="lasse holberg petersen data scientist lassepetersen@protonmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Lasse Holberg Petersen</div>
+                        <div class="card-stilling">Data scientist</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:lassepetersen@protonmail.com">lassepetersen@protonmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="mikkel stouby petersen lektor mikkelstouby@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Mikkel Stouby Petersen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mikkelstouby@gmail.com">mikkelstouby@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="fabricio carlos pinheiro de oliveira lektor fabol@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Fabricio Carlos Pinheiro de Oliveira</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:fabol@dtu.dk">fabol@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="anca pircalabu analytiker anca.pircalabu@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Anca Pircalabu</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:anca.pircalabu@gmail.com">anca.pircalabu@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="rolf poulsen lektor rolf@math.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Rolf Poulsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:rolf@math.ku.dk">rolf@math.ku.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="Q">
+                <div class="letter-heading">Q</div>
+                <div class="card" data-search="jing qin lektor qin@imada.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jing Qin</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:qin@imada.sdu.dk">qin@imada.sdu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="santiago quintero de los ríos quantitative analyst mail@sanqui.me">
+                    <div class="card-left">
+                        <div class="card-name">Santiago Quintero de los Ríos</div>
+                        <div class="card-stilling">Quantitative Analyst</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mail@sanqui.me">mail@sanqui.me</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="R">
+                <div class="letter-heading">R</div>
+                <div class="card" data-search="anders rahbek professor anders.rahbek@econ.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Anders Rahbek</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:anders.rahbek@econ.ku.dk">anders.rahbek@econ.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="martin raussen professor mso raussen@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Martin Raussen</div>
+                        <div class="card-stilling">Professor mso</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:raussen@math.aau.dk">raussen@math.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="mirela ismaili redzic lektor mirela@redzic.com">
+                    <div class="card-left">
+                        <div class="card-name">Mirela Ismaili Redzic</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mirela@redzic.com">mirela@redzic.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="sune nikolaj precht reeh analytiker sune@reeh.dk">
+                    <div class="card-left">
+                        <div class="card-name">Sune Nikolaj Precht Reeh</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:Sune@Reeh.dk">Sune@Reeh.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="line blander reinhardt lektor liner@ruc.dk">
+                    <div class="card-left">
+                        <div class="card-name">Line Blander Reinhardt</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:liner@ruc.dk">liner@ruc.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="morten risager lektor risager@math.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Morten Risager</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:risager@math.ku.dk">risager@math.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="david earl roberson lektor dero@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">David Earl Roberson</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:dero@dtu.dk">dero@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="eva rotenberg lektor erot@itu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Eva Rotenberg</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:erot@itu.dk">erot@itu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="ege rubak ph.d., cand.scient. rubak@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Ege Rubak</div>
+                        <div class="card-stilling">Ph.d., cand.scient.</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:rubak@math.aau.dk">rubak@math.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="anders rønn-nielsen lektor aro.fi@cbs.dk">
+                    <div class="card-left">
+                        <div class="card-name">Anders Rønn-Nielsen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:aro.fi@cbs.dk">aro.fi@cbs.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="S">
+                <div class="letter-heading">S</div>
+                <div class="card" data-search="oliver lunding sandqvist aktuar oliver.sandqvist@outlook.dk">
+                    <div class="card-left">
+                        <div class="card-name">Oliver Lunding Sandqvist</div>
+                        <div class="card-stilling">Aktuar</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:oliver.sandqvist@outlook.dk">oliver.sandqvist@outlook.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="orimar sauri lektor osauri@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Orimar Sauri</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:osauri@math.aau.dk">osauri@math.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="henrik schlichtkrull professor schlicht@math.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Henrik Schlichtkrull</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:schlicht@math.ku.dk">schlicht@math.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jingyu she aktuar s10jsku@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Jingyu She</div>
+                        <div class="card-stilling">Aktuar</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:s10jsku@gmail.com">s10jsku@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="erik skibsted lektor skibsted@math.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Erik Skibsted</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:skibsted@math.au.dk">skibsted@math.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="david glavind skovmand lektor skovmand@math.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">David Glavind Skovmand</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:skovmand@math.ku.dk">skovmand@math.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="david sloth pedersen analytiker davidsloth@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">David Sloth Pedersen</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:davidsloth@gmail.com">davidsloth@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="gustav bundgaard smidth porteføljemanager gbs@majinvest.com">
+                    <div class="card-left">
+                        <div class="card-name">Gustav Bundgaard Smidth</div>
+                        <div class="card-stilling">Porteføljemanager</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:gbs@majinvest.com">gbs@majinvest.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="peter johannes steffensen systemudvikler hoegh49@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Peter Johannes Steffensen</div>
+                        <div class="card-stilling">Systemudvikler</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:hoegh49@gmail.com">hoegh49@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="mads stehr lektor mast.fi@cbs.dk">
+                    <div class="card-left">
+                        <div class="card-name">Mads Stehr</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mast.fi@cbs.dk">mast.fi@cbs.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="anders stockmarr lektor anst@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Anders Stockmarr</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:anst@dtu.dk">anst@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="michael henning juul stæhr chefanalytiker mhjstaehr@live.dk">
+                    <div class="card-left">
+                        <div class="card-name">Michael Henning Juul Stæhr</div>
+                        <div class="card-stilling">Chefanalytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:MHJStaehr@live.dk">MHJStaehr@live.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="kasper studsgaard sørensen postdoc kasper@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Kasper Studsgaard Sørensen</div>
+                        <div class="card-stilling">Postdoc</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:kasper@math.aau.dk">kasper@math.aau.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="T">
+                <div class="letter-heading">T</div>
+                <div class="card" data-search="christian tarp aktuar christian.schouborg.tarp@pwc.com">
+                    <div class="card-left">
+                        <div class="card-name">Christian Tarp</div>
+                        <div class="card-stilling">Aktuar</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:Christian.Schouborg.Tarp@pwc.com">Christian.Schouborg.Tarp@pwc.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="anders therkelsen aktuar antherkelsen@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Anders Therkelsen</div>
+                        <div class="card-stilling">Aktuar</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:antherkelsen@gmail.com">antherkelsen@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="uffe høgsbro thygesen lektor uhth@dtu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Uffe Høgsbro Thygesen</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:uhth@dtu.dk">uhth@dtu.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="kasper tofte softwareudvikler kaspertofte@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Kasper Tofte</div>
+                        <div class="card-stilling">Softwareudvikler</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:kaspertofte@gmail.com">kaspertofte@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="anders tolver analytiker atolve@cancer.dk">
+                    <div class="card-left">
+                        <div class="card-name">Anders Tolver</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:atolve@cancer.dk">atolve@cancer.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jimi lee truelsen direktør jimi.truelsen@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Jimi Lee Truelsen</div>
+                        <div class="card-stilling">Direktør</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:Jimi.Truelsen@gmail.com">Jimi.Truelsen@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="torben tvedebrink lektor torben@tvedebrink.dk">
+                    <div class="card-left">
+                        <div class="card-name">Torben Tvedebrink</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:torben@tvedebrink.dk">torben@tvedebrink.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="kamille sofie tågholt gad senioranalytiker ksg@atp.dk">
+                    <div class="card-left">
+                        <div class="card-name">Kamille Sofie Tågholt Gad</div>
+                        <div class="card-stilling">Senioranalytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:KSG@atp.dk">KSG@atp.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="U">
+                <div class="letter-heading">U</div>
+                <div class="card" data-search="eva uhre analytiker euhre@ruc.dk">
+                    <div class="card-left">
+                        <div class="card-name">Eva Uhre</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:euhre@ruc.dk">euhre@ruc.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="V">
+                <div class="letter-heading">V</div>
+                <div class="card" data-search="torben strange vaarby aktuar osz@topdanmark.dk">
+                    <div class="card-left">
+                        <div class="card-name">Torben Strange Vaarby</div>
+                        <div class="card-stilling">Aktuar</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:osz@topdanmark.dk">osz@topdanmark.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="søren vagner undervisningskonsulent soren@vagner.org">
+                    <div class="card-left">
+                        <div class="card-name">Søren Vagner</div>
+                        <div class="card-stilling">Undervisningskonsulent</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:soren@vagner.org">soren@vagner.org</a>
+                    </div>
+                </div>
+                <div class="card" data-search="bezirgen veliyev lektor bveliyev@econ.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Bezirgen Veliyev</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:bveliyev@econ.au.dk">bveliyev@econ.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="jose eduardo vera-valdez lektor eduardo@math.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Jose Eduardo Vera-Valdez</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:eduardo@math.aau.dk">eduardo@math.aau.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="søren byg vilsen seniorforsker svilsen@mp.aau.dk">
+                    <div class="card-left">
+                        <div class="card-name">Søren Byg Vilsen</div>
+                        <div class="card-stilling">Seniorforsker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:svilsen@mp.aau.dk">svilsen@mp.aau.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="W">
+                <div class="letter-heading">W</div>
+                <div class="card" data-search="albert werner lektor werner@math.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Albert Werner</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:werner@math.ku.dk">werner@math.ku.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="mads wessel pedersen chef i biostatistik pedersenmadsmoeller@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Mads Wessel Pedersen</div>
+                        <div class="card-stilling">Chef i biostatistik</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:pedersenmadsmoeller@gmail.com">pedersenmadsmoeller@gmail.com</a>
+                    </div>
+                </div>
+                <div class="card" data-search="carsten wiuf professor wiuf@math.ku.dk">
+                    <div class="card-left">
+                        <div class="card-name">Carsten Wiuf</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:wiuf@math.ku.dk">wiuf@math.ku.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="X">
+                <div class="letter-heading">X</div>
+                <div class="card" data-search="david haoyang xu aktuar davidhaoyangxu@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">David Haoyang Xu</div>
+                        <div class="card-stilling">Aktuar</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:davidhaoyangxu@gmail.com">davidhaoyangxu@gmail.com</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="Y">
+                <div class="letter-heading">Y</div>
+                <div class="card" data-search="jinwen ye analytiker jinweny2018@gmail.com">
+                    <div class="card-left">
+                        <div class="card-name">Jinwen Ye</div>
+                        <div class="card-stilling">Analytiker</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:jinweny2018@gmail.com">jinweny2018@gmail.com</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="Z">
+                <div class="letter-heading">Z</div>
+                <div class="card" data-search="ralf zimmermann lektor zimmermann@imada.sdu.dk">
+                    <div class="card-left">
+                        <div class="card-name">Ralf Zimmermann</div>
+                        <div class="card-stilling">Lektor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:zimmermann@imada.sdu.dk">zimmermann@imada.sdu.dk</a>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-group" data-letter="Ø">
+                <div class="letter-heading">Ø</div>
+                <div class="card" data-search="morten ørregaard nielsen professor mon@econ.au.dk">
+                    <div class="card-left">
+                        <div class="card-name">Morten Ørregaard Nielsen</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:mon@econ.au.dk">mon@econ.au.dk</a>
+                    </div>
+                </div>
+                <div class="card" data-search="lars peter raahave østerdal professor lpo.eco@cbs.dk">
+                    <div class="card-left">
+                        <div class="card-name">Lars Peter Raahave Østerdal</div>
+                        <div class="card-stilling">Professor</div>
+                    </div>
+                    <div class="card-email">
+                        <a href="mailto:lpo.eco@cbs.dk">lpo.eco@cbs.dk</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="no-results" id="noResults">Ingen censorer matcher din s&oslash;gning.</div>
+    </div>
+
+    <div class="footer">
+        Censorkorps for Matematik &bull; Opdateret april 2026
+    </div>
+
+    <script>
+        function filterCards() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.card');
+            const groups = document.querySelectorAll('.letter-group');
+            let anyVisible = false;
+
+            cards.forEach(card => {
+                const match = card.dataset.search.includes(query);
+                card.style.display = match ? 'flex' : 'none';
+                if (match) anyVisible = true;
+            });
+
+            groups.forEach(group => {
+                const visibleCards = group.querySelectorAll('.card[style="display: flex;"], .card:not([style*="display"])');
+                let hasVisible = false;
+                group.querySelectorAll('.card').forEach(c => {
+                    if (c.style.display !== 'none') hasVisible = true;
+                });
+                group.style.display = hasVisible ? 'block' : 'none';
+            });
+
+            document.getElementById('noResults').style.display = anyVisible ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>
